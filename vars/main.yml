@@ -1,0 +1,16 @@
+postgresql_databases:
+  - name: shipcommander
+postgresql_users:
+  - name: shipcommander
+    password: shipcommander
+postgresql_restarted_state: "restarted"
+postgresql_python_library: python-psycopg2
+postgresql_user: postgres
+postgresql_group: postgres
+postgresql_service_state: started
+postgresql_service_enabled: true
+postgresql_hba_entries:
+  - { type: local, database: all, user: postgres, auth_method: peer }
+  - { type: local, database: all, user: all, auth_method: peer }
+  - { type: host, database: all, user: all, address: '127.0.0.1/32', auth_method: md5 }
+  - { type: host, database: all, user: all, address: '::1/128', auth_method: md5 }

@@ -1,48 +1,18 @@
 ---
 - name: Deploy Ship Commander
   hosts: all
+  become: yes
+  vars_files:
+    - vars/main.yml
+  roles:
+    - geerlingguy.postgresql
   tasks:
     - name: Update System
       yum:
-        name: postgresql-server, java-11-openjdk-headless, python3-psycopg2
+        name: java-11-openjdk-headless
         enablerepo: postgresql:stream
         state: latest
         update_cache: true
-    - name: Check if postgresl is already initialized
-      stat:
-        path: /var/lib/pgsql/data
-      register: pg_init_stat
-    - name: Initialize PostgreSQL
-      shell: "postgresql-setup --initdb"
-      when: not pg_init_stat.stat.exists
-    - name: Start PostgreSQL services
-      service:
-        name: postgresql.service
-        state: started
-    - name: Create ship commander user
-      user:
-        name: shipcommander
-        groups: postgres
-    - name: Create ship-commander database
-      postgresql_db:
-        name: ship
-      become_user: postgres
-    - name: Deploy ship-commander postgres user
-      postgresql_user:
-        db: ship
-        name: shipcommander
-        password: shipcommander
-        priv: ALL
-        role_attr_flags: LOGIN
-      become_user: postgres
-    - name: Ensure we have access from the new user
-      postgresql_privs:
-        db: ship
-        role: shipcommander
-        objs: ALL_IN_SCHEMA
-        privs: ALL
-      become: true
-      become_user: postgres
     - name: Create ship-commander install location
       file:
         path: /opt/ship-commander
@@ -52,7 +22,6 @@
         src: ship-commander.jar
         dest: /opt/ship-commander/ship-commander.jar
         mode: u+rwx
-        owner: shipcommander
       register: shipcommcopy
     - name: Deploy ship commander unit
       copy:

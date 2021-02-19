@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 ExecStart=/usr/bin/java -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/ship -Dquarkus.datasource.username=shipcommander -Dquarkus.datasource.password=shipcommander -jar /opt/ship-commander/ship-commander.jar
-User=shipcommander
+# User=shipcommander
 
 [Install]
 WantedBy=multi-user.target
